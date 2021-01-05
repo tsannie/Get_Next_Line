@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tsannie <tsannie@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/10/20 18:36:09 by tsannie           #+#    #+#             */
-/*   Updated: 2021/01/04 16:02:45 by tsannie          ###   ########.fr       */
+/*   Created: 2021/01/04 16:04:41 by tsannie           #+#    #+#             */
+/*   Updated: 2021/01/04 16:21:39 by tsannie          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 int		searchreturn(char *src)
 {
@@ -53,7 +53,7 @@ char	*dup_free(char *stock, char **line)
 
 int		get_next_line(int fd, char **line)
 {
-	static char	*stock;
+	static char	*stock[4096];
 	char		buff[BUFFER_SIZE + 1];
 	int			i;
 	int			res;
@@ -61,17 +61,17 @@ int		get_next_line(int fd, char **line)
 	i = 0;
 	if (!line || fd < 0 || BUFFER_SIZE < 1 || read(fd, buff, 0) == -1)
 		return (-1);
-	i = searchreturn(stock);
-	if (stock && (i != -1))
-		return (write_line(line, stock, i));
+	i = searchreturn(stock[fd]);
+	if (stock[fd] && (i != -1))
+		return (write_line(line, stock[fd], i));
 	while (((res = read(fd, buff, BUFFER_SIZE)) > 0))
 	{
 		buff[res] = '\0';
-		stock = ft_strjoin(stock, buff);
-		i = searchreturn(stock);
-		if (stock && (i != -1))
-			return (write_line(line, stock, i));
+		stock[fd] = ft_strjoin(stock[fd], buff);
+		i = searchreturn(stock[fd]);
+		if (stock[fd] && (i != -1))
+			return (write_line(line, stock[fd], i));
 	}
-	stock = dup_free(stock, line);
+	stock[fd] = dup_free(stock[fd], line);
 	return (0);
 }
